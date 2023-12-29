@@ -1,12 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 import css from './ContactForm.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from '../../redux/contactsSlice';
-import { getContacts } from '../../redux/selectors';
+import { addContact } from '../../redux/operations';
+import { selectContacts } from '../../redux/selectors';
 
 export const ContactForm = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
+  const contacts = useSelector(selectContacts);
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -14,14 +14,19 @@ export const ContactForm = () => {
     const newName = form.elements.name.value;
     const newNumber = form.elements.number.value;
 
-    if (contacts.filter(contact => contact.name.includes(newName)).length) {
+    if (contacts.find(contact => contact.name === newName)) {
       alert(`${newName} is already in your contact list.`);
     } else if (
-      contacts.filter(contact => contact.number.includes(newNumber)).length
+      contacts.filter(contact => contact.phone.includes(newNumber)).length
     ) {
       alert(`${newName} cannot have the same number as your other contact.`);
     } else if (newName !== '' || newNumber !== '') {
-      dispatch(addContact(newName, newNumber));
+      dispatch(
+        addContact({
+          name: newName,
+          phone: newNumber,
+        })
+      );
       form.reset();
     }
   };
